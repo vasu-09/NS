@@ -41,6 +41,9 @@ server:
 
 logging:
   level:
+    com:
+      om:
+        Notification_Service: ${LOGGING_LEVEL_COM_OM_NOTIFICATION_SERVICE:INFO}
     org:
       hibernate:
         SQL: ${LOGGING_LEVEL_ORG_HIBERNATE_SQL:WARN}

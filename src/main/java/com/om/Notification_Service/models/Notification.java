@@ -20,6 +20,7 @@ public class Notification {
     private Long userId;            // who to notify
     private String type;            // e.g. “MEETING_REMINDER”, “NEW_MESSAGE”
     private String payload;         // JSON blob with contextual info
+    @Column(name = "is_read")
     private boolean read = false;
     private Instant createdAt = Instant.now();
     @Column(unique = true)

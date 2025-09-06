@@ -9,6 +9,8 @@ import com.om.Notification_Service.dto.*;
 import com.om.Notification_Service.models.Notification;
 import com.om.Notification_Service.repository.NotificationRepository;
 import io.micrometer.core.annotation.Timed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -34,8 +36,12 @@ public class NotificationService {
     @Autowired private ChatMessageService messageService;
     @Autowired private UserService userService;
 
+    private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
+
     @EventListener
-    public void onRecipientsAdded(RecipientsAddedToListEvent evt) {
+    public void handleRecipientsAdded(RecipientsAddedToListEvent evt) {
+        log.info("Received RecipientsAddedToListEvent: listId={}, creatorUserId={}, newUserIds={}",
+                evt.getListId(), evt.getCreatorUserId(), evt.getNewUserIds());
         String creatorName = userService.findById(String.valueOf(evt.getCreatorUserId())).getDisplayName();
         String template = "%s added you to the To-Do list “%s”.";
 
@@ -60,6 +66,7 @@ public class NotificationService {
 
     @Timed(value = "notifications.handle", histogram = true)
     public void handleEvent(EventMessage event) {
+        log.info("Handling event of type {} for user {} with recipients {}", event.getType(), event.getUserId(), event.getRecipientIds());
         List<Long> recipients = event.getRecipientIds();
         if (recipients == null || recipients.isEmpty()) {
             if (event.getUserId() != null) {
